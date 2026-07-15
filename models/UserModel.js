@@ -16,31 +16,24 @@ const userModel=sequelize.define(
         },
          email:{
             type:DataTypes.STRING,
-            allowNull:false 
         },
          profilePic:{
             type:DataTypes.STRING,
-            allowNull:false 
         },
         age:{
             type:DataTypes.INTEGER,
-            allowNull:false 
         },
         mobile:{
             type:DataTypes.INTEGER,
-            allowNull:false 
         },
         dob:{
             type:DataTypes.STRING,
-            allowNull:false  
         },
         gender:{
             type:DataTypes.STRING,
-            allowNull:false   
         },
         country:{
             type:DataTypes.STRING,
-            allowNull:false   
         },
         role:{
             type:DataTypes.ENUM("user","admin"),

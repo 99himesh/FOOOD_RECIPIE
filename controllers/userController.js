@@ -1,10 +1,13 @@
 
 
+const { Op } = require("sequelize");
 const userModel=require("../models/UserModel.js")
-
+const bcrypt = require('bcrypt');
 const signUp = async (req, res) => {
     try {
         const { name, email, password, mobile } = req.body;
+        console.log(name,email,password,mobile);
+        
         const user = await userModel.findAll({
             where: {
                 [Op.or]: {
@@ -17,11 +20,15 @@ const signUp = async (req, res) => {
         if (user.length) {
             return res.status(400).send("User aready  exist")
         }
-        bcrypt.hash(password, 10, async function (err, hash) {
+        await bcrypt.hash(password, 10, async function (err, hash) {
+            console.log("password",password);
+            
             if (err) {
-                throw new Error("Somethinggfsngkjsfdn went wrong!")
+                throw new Error("Something went wrong!")
             }
-            const user = await Users.create({ name, email, password: hash, mobile });
+            console.log(hash,"dfdsfs");
+            
+            const user = await userModel.create({ name, email, password: hash, mobile });
             res.status(201).json({ success: true, user, message: "User created successfully" })
         });
     } catch (error) {
@@ -38,7 +45,7 @@ const logIn = async (req, res) => {
         const { emailAndMobile, password } = req.body;
         console.log(emailAndMobile);
 
-        const user = await Users.findAll({
+        const user = await userModel.findAll({
             where: {
                 [Op.or]: [
                     { email: emailAndMobile },
@@ -68,4 +75,9 @@ const logIn = async (req, res) => {
         res.status(500).json(error.message)
 
     }
+}
+
+
+module.exports={
+    signUp
 }

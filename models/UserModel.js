@@ -12,7 +12,8 @@ const userModel=sequelize.define(
         },
         name:{
              type:DataTypes.STRING,
-             allowNull:false 
+             allowNull:false ,
+               unique: true
         },
          email:{
             type:DataTypes.STRING,
@@ -44,9 +45,6 @@ const userModel=sequelize.define(
             type:DataTypes.STRING,
             allowNull:false 
         }
-
-
-
     }
 );
 

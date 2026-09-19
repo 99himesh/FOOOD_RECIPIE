@@ -4,7 +4,8 @@ const recipeModel=require("./recipeModel.js")
 const CollectionModel=require("./collectionModel.js");
 const CollectionRecipeModel = require("./collectionRecipeModel.js");
 const RateReviewModel = require("./rateReviewModel.js");
-const FollowerModel=require("./followeModel.js")
+const FollowerModel=require("./followeModel.js");
+const NotificationModel=require("./notificationModel.js")
 userModel.hasMany(recipeModel);
 recipeModel.belongsTo(userModel)
 

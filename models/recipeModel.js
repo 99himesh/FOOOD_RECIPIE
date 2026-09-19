@@ -20,10 +20,9 @@ const Recipe = sequelize.define(
       allowNull: false,
     },
 
-    ingredients: {
-      type: DataTypes.JSON,
-      allowNull: false,
-    },
+    // ingredients: {
+    //   type: DataTypes.JSON,
+    // },
 
     instructions: {
       type: DataTypes.TEXT,
@@ -40,11 +39,7 @@ const Recipe = sequelize.define(
     dietType: {
       type: DataTypes.ENUM(
         "Vegetarian",
-        "Vegan",
-        "Non-Vegetarian",
-        "Jain",
-        "Gluten-Free",
-        "Keto"
+        "Non-Vegetarian"
       ),
       allowNull: false,
       defaultValue: "Vegetarian",

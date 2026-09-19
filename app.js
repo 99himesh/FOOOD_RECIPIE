@@ -16,12 +16,34 @@ const favourateRoute=require("./routes/favourateRoute.js");
 const collectionRoute=require("./routes/collectionRoute.js");
 const collectionRecipeRoute=require("./routes/collectionRecipeRoute.js")
 const rateReviewRoute=require("./routes/rateReviewRoute.js");
-const followRoute=require("./routes/followRoute.js")
+const followRoute=require("./routes/followRoute.js");
+const mediaRoute=require("./routes/mediaRoutes.js"); 
+const notificationRoute=require("./routes/notificationRoute.js");
+ 
+const { initSocket } = require('./socketio/socket.js');
+
+const  {createServer} =require("http")
+
+
+const server=new createServer(app);
+
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(
+    {
+    origin: "http://localhost:5173",
+    credentials: true,
+}
+));
 
 
 
+
+const io = initSocket(server);
+
+io.on("connection", (socket) => {
+  console.log("Connected:", socket.id);
+});
 
 
 app.use("/user",userRoute)
@@ -31,9 +53,12 @@ app.use("/collection",collectionRoute)
 app.use("/collectionRecipe",collectionRecipeRoute)
 app.use("/rateReview",rateReviewRoute)
 app.use("/followers",followRoute)
+app.use("/media",mediaRoute)
+app.use("/notifications",notificationRoute)
+
 
 db.sync().then(()=>{
-    app.listen(process.env.PORT,()=>{
+    server.listen(process.env.PORT,()=>{
     console.log(`Server is listening on port ${process.env.PORT}`);
 })
 

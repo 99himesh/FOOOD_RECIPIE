@@ -13,22 +13,25 @@ const userModel=sequelize.define(
         name:{
              type:DataTypes.STRING,
              allowNull:false ,
-               unique: true
         },
          email:{
             type:DataTypes.STRING,
+             unique: true
+
         },
          profilePic:{
             type:DataTypes.STRING,
         },
-        age:{
-            type:DataTypes.INTEGER,
-        },
         mobile:{
-            type:DataTypes.INTEGER,
+            type:DataTypes.STRING,
+            unique: true
+
         },
         dob:{
             type:DataTypes.STRING,
+        },
+        age:{
+            type:DataTypes.INTEGER,
         },
         gender:{
             type:DataTypes.STRING,
@@ -44,7 +47,11 @@ const userModel=sequelize.define(
         password:{
             type:DataTypes.STRING,
             allowNull:false 
-        }
+        },
+       isBlock: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+            }
     }
 );
 

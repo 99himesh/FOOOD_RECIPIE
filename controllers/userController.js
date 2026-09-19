@@ -5,6 +5,9 @@ const userModel=require("../models/UserModel.js")
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const FollowerModel = require("../models/followeModel.js");
+const { sendNotificationToAll } = require("../socketio/notification.js");
+const NotificationModel = require("../models/notificationModel.js");
+const sequelize = require("../utils/db.js");
 
 const generatejwtToken = async (userId, name) => {
     return await jwt.sign({ userId: userId, name: name }, process.env.JWT_SECRET_KEY);
@@ -35,6 +38,7 @@ const signUp = async (req, res) => {
             console.log(hash,"dfdsfs");
             
             const user = await userModel.create({ name, email, password: hash, mobile,role });
+
             res.status(201).json({ success: true, user, message: "User created successfully" })
         });
     } catch (error) {
@@ -59,8 +63,11 @@ const logIn = async (req, res) => {
                 ]
             }
         });
-        console.log(user[0].password);
-
+        console.log(user);
+        
+        if(user[0].isBlock){
+          return  res.status(403).json({message:"User is blocked"})
+        }
         if (!user.length) {
             return res.status(404).send("User not exist");
         }
@@ -70,7 +77,7 @@ const logIn = async (req, res) => {
                 throw new Error("Something went wrong!")
             }
             if (result) {
-                res.status(200).json({ success: true, user, token: await generatejwtToken(user[0].id, user[0].name), message: "User Login successfully" })
+                res.status(200).json({ success: true, user:user[0], token: await generatejwtToken(user[0].id, user[0].name), message: "User Login successfully" })
             } else {
                 return res.status(401).send("User not authorized");
             }
@@ -108,29 +115,66 @@ const getUserById=async(req,res)=>{
 }
 
 const getUsers=async(req,res)=>{
+    const {search}=req.query;
+    const {page,limit}=req.query;
+   const pageNumber = parseInt(req.query.page) || 1;
+   const limits = parseInt(req.query.limit) || 12;
+   const offset = (pageNumber - 1) * limits;
     try {
-        const loginUserId=req.user.id;
-        const user=await userModel.findAll({});
-        if(!user.length){
+          const userWhere = {};
+          if (search) {
+                userWhere[Op.or] = [
+                    {
+                    name: {
+                        [Op.like]: `%${search}%`,
+                    },
+                    },
+                    {
+                    email: {
+                        [Op.like]: `%${search}%`,
+                    },
+                    },
+                     {
+                    mobile: {
+                        [Op.like]: `%${search}%`,
+                    },
+                    },
+                    
+                ];
+                }
+        
+        const loginUserId=req.user?.id;
+        const user=await userModel.findAndCountAll(
+            {where:{
+                ...userWhere,
+                id: {
+                [Op.ne]:loginUserId 
+             },
+
+            },
+            limit:limits,
+            offset:offset,
+            order:[["createdAt","Desc"]]
+        });
+        if(!user){
             res.status(404).json({success:false,message:"User not exist"});
 
         }
-        const allUserExcludeMe=user.filter(item=>item.id!==loginUserId);
         const followingUser=await FollowerModel.findAll({
             where:{
                 followerId:loginUserId
             }
         });
         const followingIds=followingUser.map(item=>item.followingId)
-        const result=allUserExcludeMe.map(item=>{
+        const result=user?.rows?.map(item=>{
             return {...item.toJSON(),isFollow:followingIds.includes(item.id)}
         });
-           res.status(200).json({success:true,message:"users fetch successfully",result})
+           res.status(200).json({success:true,message:"users fetch successfully",result,count:user?.count})
         
     } catch (error) {
         console.log(error);
         
-            res.status(500).json({success:false,message:error});
+            res.status(500).json({success:false,message:error.message});
         
     }
 }
@@ -139,8 +183,11 @@ const getUsers=async(req,res)=>{
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const {  name, email, profilePic, age, mobile, dob, gender, country, role, password} = req.body;
+        const {  name, email, profilePic, age, mobile, dob, gender, country, role, password,isBlock} = req.body;
+       console.log(id,isBlock,"jghfhfh");
+       
         const user = await userModel.findByPk(id);
+       
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -155,12 +202,15 @@ const updateUser = async (req, res) => {
         user.dob = dob || user.dob;
         user.gender = gender || user.gender;
         user.country = country || user.country;
-        if(role && user.role=="admin"){
-          user.role = role || user.role;
+        if(role && req.user.role=="admin"){
+          user.role = role ;
 
-        }else if(role && user.role!="admin"){
-            res.status(403).json({success:false,message:"You re not authorzed to chsange role"})
         }
+        if(isBlock != undefined && req.user.role=="admin"){
+           user.isBlock = isBlock 
+
+        }
+       
         if (password) {
             const hashPassword = await bcrypt.hash(password, 10);
             user.password = hashPassword;
@@ -181,11 +231,32 @@ const updateUser = async (req, res) => {
 }
 
 
+const deleteUser=async(req,res)=>{
+    const {id}=req.params;
+    try {
+        const resposne=await userModel.destroy({where:{id:id}});
+         console.log(resposne,"lcksdbfvkj");
+         if(resposne==1){
+           res.status(200).json({success:true,message:"User Deleted Successfully"}) 
+         }else{
+           res.status(400).json({success:false,message:"User Deleted unsuccessfull"}) 
+
+         }
+        
+    } catch (error) {
+         console.log(error);
+           res.status(500).json({success:false,message:"User Deleted unsuccessfull"}) 
+
+        
+    }
+}
+
 
 module.exports={
     signUp,
     logIn,
     getUserById,
     getUsers,
-    updateUser
+    updateUser,
+    deleteUser
 }

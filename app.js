@@ -19,7 +19,7 @@ const rateReviewRoute=require("./routes/rateReviewRoute.js");
 const followRoute=require("./routes/followRoute.js");
 const mediaRoute=require("./routes/mediaRoutes.js"); 
 const notificationRoute=require("./routes/notificationRoute.js");
- 
+const aiRoute=require("./routes/aiRoute.js")
 const { initSocket } = require('./socketio/socket.js');
 
 const  {createServer} =require("http")
@@ -55,6 +55,7 @@ app.use("/rateReview",rateReviewRoute)
 app.use("/followers",followRoute)
 app.use("/media",mediaRoute)
 app.use("/notifications",notificationRoute)
+app.use("/ai",aiRoute)
 
 
 db.sync().then(()=>{

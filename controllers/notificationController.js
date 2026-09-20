@@ -2,6 +2,11 @@
 const { Op } = require("sequelize");
 const NotificationModel=require("../models/notificationModel")
 const getNotification=async(req,res)=>{
+     const {page,limit,search}=req.query;
+   const pageNumber = parseInt(req.query.page) || 1;
+   const limits = parseInt(req.query.limit) || 10;
+   const offset = (pageNumber - 1) * limits;
+    
     try {
         const notification=await NotificationModel.findAndCountAll({
             where:{
@@ -11,6 +16,9 @@ const getNotification=async(req,res)=>{
                 },
                 
             },
+             distinct: true,
+            limit:limits,
+            offset:offset,
             order: [["createdAt", "DESC"]],
         });
         if(!notification){
@@ -61,17 +69,12 @@ const deleteNotificationHandler=async(req,res)=>{
 const deleteAllNotificationHandler=async(req,res)=>{
     try {
         const deleteNotification=await NotificationModel.destroy({where:{}});
-        
         if(deleteNotification==0){
            res.status(500).json({success:false,message:"Notification delete failed"})
-            
         }
         res.status(200).json({success:true,message:"All Notification delete successsfully"})
-
-        
     } catch (error) {
-           res.status(500).json({success:false,message:"Notification delete failed"})
-        
+           res.status(500).json({success:false,message:"Notification delete failed"})   
     }
 }
 

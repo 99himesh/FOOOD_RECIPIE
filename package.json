@@ -12,6 +12,7 @@
     "start": "nodemon app.js"
   },
   "dependencies": {
+    "@google/genai": "^2.23.0",
     "aws-sdk": "^2.1693.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",

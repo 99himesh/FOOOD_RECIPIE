@@ -1,28 +1,16 @@
 const {Sequelize}=require("sequelize");
 
-
-
-
-
 const sequelize=new Sequelize("food_recipe","root","Himesh1999@",{
     host:"localhost",
     dialect:"mysql"
 });
 
-
-
-
-
-
 (async ()=>{
    try {
-     await sequelize.authenticate();
-     
+     await sequelize.authenticate();     
    } catch (error) {
      console.log("Database connected Failed");
-    
    }
-
 })();
 
 

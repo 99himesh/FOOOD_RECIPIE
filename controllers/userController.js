@@ -132,7 +132,10 @@ const getUsers=async(req,res)=>{
                 ...userWhere,
                 id: {
                 [Op.ne]:loginUserId 
-             },
+                },
+                role:{
+                    [Op.ne]:"admin"
+                }
 
             },
             limit:limits,

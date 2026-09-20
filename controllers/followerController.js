@@ -54,9 +54,7 @@ const unFollowUser=async(req,res)=>{
               isRead:false
           })
     res.status(200).json({success:true,message:"User unfollow successfully"});
-    } catch (error) {
-        console.log(error);
-        
+    } catch (error) {        
         res.status(500).json({ success: false, message: "User Unfollow  Unsuccessfully" })
     }
 }

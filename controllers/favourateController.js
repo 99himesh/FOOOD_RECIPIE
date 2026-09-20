@@ -56,9 +56,7 @@ const getFavourateByUserId=async(req,res)=>{
            res.status(404).json({success:false,message:"favourate not found"})
        }
        res.status(200).json({success:true,message:"Favourate recipe fetch successfully",favourate:result})
-    } catch (error) {
-        console.log(error);
-        
+    } catch (error) {        
     res.status(500).json({success:false,message:"Recipe fetch failed" })
     }
 
@@ -93,11 +91,8 @@ const deleteFavourate=async(req,res)=>{
        res.status(200).json({success:true,message:"Favourate recipe delete successfully"})
 
         
-    } catch (error) {
-        console.log(error);
-        
-       res.status(500).json({success:false,message:"Recipe delete failed" })
-        
+    } catch (error) {        
+       res.status(500).json({success:false,message:"Recipe delete failed" })   
     }
 }
 

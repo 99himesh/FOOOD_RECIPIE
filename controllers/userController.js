@@ -14,9 +14,7 @@ const generatejwtToken = async (userId, name) => {
 }
 const signUp = async (req, res) => {
     try {
-        const { name, email, password, mobile ,role} = req.body;
-        console.log(name,email,password,mobile);
-        
+        const { name, email, password, mobile ,role} = req.body;        
         const user = await userModel.findAll({
             where: {
                 [Op.or]: {
@@ -29,32 +27,21 @@ const signUp = async (req, res) => {
         if (user.length) {
             return res.status(400).send("User aready  exist")
         }
-        await bcrypt.hash(password, 10, async function (err, hash) {
-            console.log("password",password);
-            
+        await bcrypt.hash(password, 10, async function (err, hash) {            
             if (err) {
                 throw new Error("Something went wrong!")
-            }
-            console.log(hash,"dfdsfs");
-            
+            }            
             const user = await userModel.create({ name, email, password: hash, mobile,role });
 
             res.status(201).json({ success: true, user, message: "User created successfully" })
         });
     } catch (error) {
-        console.log(error, "fgjbdfjhgfdjh");
-
         res.status(500).json(error)
-
     }
 }
-
-
 const logIn = async (req, res) => {
     try {
         const { emailAndMobile, password } = req.body;
-        console.log(emailAndMobile);
-
         const user = await userModel.findAll({
             where: {
                 [Op.or]: [
@@ -62,16 +49,13 @@ const logIn = async (req, res) => {
                     { mobile: emailAndMobile }
                 ]
             }
-        });
-        console.log(user);
-        
+        });        
         if(user[0].isBlock){
           return  res.status(403).json({message:"User is blocked"})
         }
         if (!user.length) {
             return res.status(404).send("User not exist");
         }
-
         await bcrypt.compare(password, user[0]?.password, async (err, result) => {
             if (err) {
                 throw new Error("Something went wrong!")
@@ -86,7 +70,6 @@ const logIn = async (req, res) => {
 
     } catch (error) {
         res.status(500).json(error.message)
-
     }
 }
 
@@ -171,9 +154,7 @@ const getUsers=async(req,res)=>{
         });
            res.status(200).json({success:true,message:"users fetch successfully",result,count:user?.count})
         
-    } catch (error) {
-        console.log(error);
-        
+    } catch (error) {        
             res.status(500).json({success:false,message:error.message});
         
     }
@@ -183,9 +164,7 @@ const getUsers=async(req,res)=>{
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const {  name, email, profilePic, age, mobile, dob, gender, country, role, password,isBlock} = req.body;
-       console.log(id,isBlock,"jghfhfh");
-       
+        const {  name, email, profilePic, age, mobile, dob, gender, country, role, password,isBlock} = req.body;       
         const user = await userModel.findByPk(id);
        
         if (!user) {
@@ -235,7 +214,6 @@ const deleteUser=async(req,res)=>{
     const {id}=req.params;
     try {
         const resposne=await userModel.destroy({where:{id:id}});
-         console.log(resposne,"lcksdbfvkj");
          if(resposne==1){
            res.status(200).json({success:true,message:"User Deleted Successfully"}) 
          }else{
@@ -244,10 +222,7 @@ const deleteUser=async(req,res)=>{
          }
         
     } catch (error) {
-         console.log(error);
-           res.status(500).json({success:false,message:"User Deleted unsuccessfull"}) 
-
-        
+           res.status(500).json({success:false,message:"User Deleted unsuccessfull"})   
     }
 }
 

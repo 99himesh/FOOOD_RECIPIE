@@ -3,16 +3,10 @@ const UserModel=require("../models/userModel");
 
 
 
-const auth=async(req,res,next)=>{
-    console.log("hello");
-    
+const auth=async(req,res,next)=>{    
     try {
         const token=req.header("Authorization").split(" ")[1] ; 
-        console.log(token,"token");
-        
-        const user=await jwt.verify(token,process.env.JWT_SECRET_KEY);
-        console.log(user,"jhvhgg");
-                
+        const user=await jwt.verify(token,process.env.JWT_SECRET_KEY);                
          const userData=await UserModel.findByPk(user?.userId);
          req.user=userData; 
                  

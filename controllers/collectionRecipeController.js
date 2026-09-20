@@ -7,7 +7,6 @@ const createRecipeToCollection=async(req,res)=>{
     try {
        const {CollectionId,RecipeId}=req.body;  
        const isRecipeExist=await CollectionRecipeModel.findAll({where:{CollectionId,RecipeId}})   ;
-       console.log(isRecipeExist,"jkjgyftd");
          if(isRecipeExist.length){
           res.status(404).json({ success: false, message: "Recipe alredy exist in the collection" });
 
@@ -27,9 +26,7 @@ const createRecipeToCollection=async(req,res)=>{
               isRead:false
           })
        res.status(200).json({success:true,message:"Recipe added to  collection successfully"})
-    } catch (error) {
-        console.log(error);
-        
+    } catch (error) {        
      res.status(500).json({message:error.errors[0].message})
     }
 }
@@ -61,9 +58,7 @@ const getRecipeToCollection=async(req,res)=>{
 }
 const deleteRecipeToCollection=async(req,res)=>{
     const {id}=req.params;
-    const {RecipeId}=req.query;
-    console.log(id,RecipeId);
-    
+    const {RecipeId}=req.query;    
     try {
         const recipeByCollection=await CollectionRecipeModel.destroy({where:{CollectionId:id,RecipeId:RecipeId}});
          if(recipeByCollection==0){

@@ -8,8 +8,6 @@ const {sendNotificationToAll} =require("../socketio/notification");
 const sequelize = require("../utils/db");
 const FollowerModel = require("../models/followeModel");
 const createRecipe = async (req, res) => {
-console.log(req,"req.user.id");
-
     const transaction=await sequelize.transaction();
 
     try {
@@ -37,16 +35,11 @@ console.log(req,"req.user.id");
         res.status(200).json({ success: true, recipe, message: "Recipe created successfully" })
 
     } catch (error) {
-        console.log(error);
         await transaction.rollback();
-
         res.status(500).json({ success: false, message: error.message })
-
     }
 }
-const getRecipeById = async (req, res) => {
-    console.log("ds,jbfdjs");
-    
+const getRecipeById = async (req, res) => {    
     try {
         const { id } = req.params;
         const recipe = await RecipeModel.findByPk(id, {
@@ -80,9 +73,7 @@ const getRecipeById = async (req, res) => {
         recipe.RateReviews.reduce((sum, item) => sum + item.rate, 0) /
         recipe.RateReviews.length
       ).toFixed(1)
-    : "0.0";
-       console.log(averageRating,"RateReviews");
-       
+    : "0.0";       
        const result={...recipe.toJSON(),rate:averageRating}
 
         if (!recipe) {
@@ -90,19 +81,13 @@ const getRecipeById = async (req, res) => {
         }
         res.status(200).json({ success: true, message: "Recipe fetch successfull", recipe:result})
 
-    } catch (error) {
-        console.log(error);
-        
-        res.status(500).json({ success: false, message: error?.errors[0]?.message })
-
-
+    } catch (error) {        
+        res.status(500).json({ success: false, message: error?.errors[0]?.message });
     }
 }
 
 const getRecipeByUserId = async (req, res) => {
-   const {id}=req.params;
-   console.log(id);
-   
+   const {id}=req.params;   
    const {page,limit,search}=req.query;
    const pageNumber = parseInt(req.query.page) || 1;
    const limits = parseInt(req.query.limit) || 10;
@@ -112,7 +97,6 @@ const getRecipeByUserId = async (req, res) => {
         const user=await userModel.findByPk(id)
         const followerCount=await FollowerModel.count({where:{followingId:id}});
         const followingCount=await FollowerModel.count({where:{followerId:id}});
-        console.log(followerCount,"followerCount");
          const recipeWhere = {};
             if (search) {
                 recipeWhere.title = {
@@ -136,12 +120,8 @@ const getRecipeByUserId = async (req, res) => {
             order:[["createdAt","Desc"]]
 
         });
-console.log(req.user.id,"req.user.id");
-
       const favourate=await FavourateModel.findAll({where:{userId:req.user.id}})
-        const data=await favourate.map((item)=>item.RecipeId)
-        console.log(data,"jjhk")
-        
+        const data=await favourate.map((item)=>item.RecipeId)        
         const finalrecipe=recipe?.rows?.map((item)=>{
             return {...item.toJSON(),isFavourate:data.includes(item.id)?true:false}
 
@@ -166,9 +146,7 @@ console.log(req.user.id,"req.user.id");
             res.status(404).json({ success: false, message: "Recipe not found" })
         }
         res.status(200).json({ success: true, message: "Recipe fetch successfully", recipe:{recipe:finalrecipe,user:userResult,recipeCount:recipe.count,followerCount, followingCount} });
-    } catch (error) {
-        console.log(error);
-        
+    } catch (error) {        
         res.status(500).json({ success: false, message: error.errors[0].message })
 
     }
@@ -280,8 +258,6 @@ const updateRecipe = async (req, res) => {
     try {
         const { title, description, ingredients, instructions, cookingTime, servings, dietType, image } = req.body;
         const recipe = await RecipeModel.findByPk(id);
-        console.log(recipe, "recipe");
-
         if (!recipe) {
             res.status(404).json({ success: false, message: "Recipe not found" })
         }

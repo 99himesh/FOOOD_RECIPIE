@@ -49,24 +49,16 @@ const deleteNotificationHandler=async(req,res)=>{
     const {id}=req.params;
 
     try {
-        const deleteNotification=await NotificationModel.destroy({where:{id:id}});
-        console.log(deleteNotification);
-        
+        const deleteNotification=await NotificationModel.destroy({where:{id:id}});        
         if(deleteNotification==0){
-           res.status(500).json({success:false,message:"Notification delete failed"})
-            
+           res.status(500).json({success:false,message:"Notification delete failed"}); 
         }
-        res.status(200).json({success:true,message:"Notification delete successsfully"})
-
-        
+        res.status(200).json({success:true,message:"Notification delete successsfully"});
     } catch (error) {
-           res.status(500).json({success:false,message:"Notification delete failed"})
-        
+           res.status(500).json({success:false,message:"Notification delete failed"}); 
     }
 }
-
 const deleteAllNotificationHandler=async(req,res)=>{
-
     try {
         const deleteNotification=await NotificationModel.destroy({where:{}});
         

@@ -26,9 +26,7 @@ const addRateReview = async (req, res) => {
           })
 
         res.status(200).json({ success: true, message: "Rate or review to recipe successfully", rateReview });
-    } catch (error) {
-        console.log(error);
-        
+    } catch (error) {        
         res.status(500).json({ success: false, message: "Rate or review to recipe  failed" })
     }
 }
@@ -74,9 +72,7 @@ const updateRateReview = async (req, res) => {
         await rateReview.save();
         res.status(200).json({ success: true, message: "Review Update successfully" })
     } catch (error) {
-        console.log(error);
         res.status(500).json({ success: false, message: "Rate or review to recipe update failed" })
-
     }
 }
 
